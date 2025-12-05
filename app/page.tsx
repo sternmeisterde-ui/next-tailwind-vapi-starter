@@ -71,7 +71,6 @@ const VapiDynamicIsland = () => {
   };
 
   const renderState = () => {
-    // Loading states
     if (isStartingCall || isEndingCall) {
       return (
         <DynamicContainer className="flex items-center justify-center h-full w-full">
@@ -83,7 +82,6 @@ const VapiDynamicIsland = () => {
       );
     }
 
-    // Idle state
     if (!isSessionActive) {
       return (
         <DynamicContainer className="flex items-center justify-center h-full w-full">
@@ -94,7 +92,6 @@ const VapiDynamicIsland = () => {
       );
     }
 
-    // Listening state
     if (isListening) {
       return (
         <DynamicContainer className="flex flex-col items-center justify-center h-full w-full">
@@ -105,7 +102,6 @@ const VapiDynamicIsland = () => {
       );
     }
 
-    // Conversation state - show all messages
     return (
       <DynamicContainer className="flex flex-col h-full w-full">
         <div 
@@ -124,7 +120,7 @@ const VapiDynamicIsland = () => {
                     : 'bg-cyan-300 text-black px-3 sm:px-4 py-2'
                 }`}
               >
-                {message.content}
+                {message.text}
               </div>
             </DynamicDiv>
           ))}
@@ -146,7 +142,6 @@ export default function Home() {
   return (
     <DynamicIslandProvider initialSize={SIZE_PRESETS.DEFAULT}>
       <main className="flex min-h-screen flex-col items-center justify-center bg-black px-4">
-        {/* Header */}
         <p className="text-gray-400 text-xs sm:text-sm mb-4 tracking-wide text-center">
           Штернмайстер тренажер для получения Гутшайн 🎤
         </p>
