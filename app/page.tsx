@@ -99,13 +99,19 @@ const VapiDynamicIsland = () => {
       );
     }
 
-    const assistantMessages = conversation.filter(msg => msg.role === 'assistant').slice(-2);
+    // Показываем ВСЕ сообщения (и assistant, и user)
     return (
-      <DynamicContainer className="flex flex-col h-full w-full px-4 py-2 space-y-2">
-        {assistantMessages.map((message, index) => (
-          <DynamicDiv key={index} className="flex justify-start">
-            <div className="bg-cyan-300 rounded-2xl tracking-tight leading-5 my-1">
-              <DynamicDescription className="bg-cyan-300 rounded-2xl tracking-tight leading-5 text-white text-left px-1">{message.text}</DynamicDescription>
+      <DynamicContainer className="flex flex-col h-full w-full px-4 py-2 space-y-2 overflow-y-auto" ref={scrollRef}>
+        {conversation.map((message, index) => (
+          <DynamicDiv key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`rounded-2xl tracking-tight leading-5 my-1 max-w-[85%] ${
+              message.role === 'user' ? 'bg-gray-600' : 'bg-cyan-300'
+            }`}>
+              <DynamicDescription className={`rounded-2xl tracking-tight leading-5 text-black text-left px-3 py-2 ${
+                message.role === 'user' ? 'bg-gray-600 text-white' : 'bg-cyan-300 text-black'
+              }`}>
+                {message.text}
+              </DynamicDescription>
             </div>
           </DynamicDiv>
         ))}
@@ -126,6 +132,10 @@ export default function Home() {
   return (
     <DynamicIslandProvider initialSize={SIZE_PRESETS.DEFAULT}>
       <main className="flex min-h-screen flex-col items-center justify-center bg-black">
+        {/* Заголовок сверху */}
+        <p className="text-gray-400 text-sm mb-4 tracking-wide">
+          Твой тренер по собеседованию в Jobcenter 🎤 
+        </p>
         <VapiDynamicIsland />
       </main>
     </DynamicIslandProvider>
