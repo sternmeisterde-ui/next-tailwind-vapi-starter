@@ -10,9 +10,9 @@ const useVapi = () => {
   const [conversation, setConversation] = useState<{ role: string, text: string }[]>([]);
   const vapiRef = useRef<any>(null);
 
-  const initializeVapi = useCallback(() => {
-    if (!vapiRef.current) {
-      const vapiInstance = new Vapi(publicKey);
+ const initializeVapi = useCallback(() => {
+  if (!vapiRef.current && publicKey) {
+    const vapiInstance = new Vapi(publicKey);
       vapiRef.current = vapiInstance;
 
       vapiInstance.on('call-start', () => {
