@@ -4,7 +4,6 @@ import {
   DynamicIslandProvider,
   DynamicIsland,
   DynamicContainer,
-  DynamicDescription,
   DynamicDiv,
   DynamicTitle,
   useDynamicIslandSize,
@@ -72,55 +71,70 @@ const VapiDynamicIsland = () => {
   };
 
   const renderState = () => {
+    // Loading states
     if (isStartingCall || isEndingCall) {
       return (
         <DynamicContainer className="flex items-center justify-center h-full w-full">
-          <Loader className="animate-spin h-12 w-12 text-yellow-300" />
-          <DynamicTitle className="ml-2 text-2xl font-black tracking-tighter text-white my-2 mr-3">
-            {isStartingCall ? "Starting" : "Ending"}
+          <Loader className="animate-spin h-8 w-8 sm:h-12 sm:w-12 text-yellow-300" />
+          <DynamicTitle className="ml-2 text-lg sm:text-2xl font-black tracking-tighter text-white my-2 mr-3">
+            {isStartingCall ? "Запуск..." : "Завершение..."}
           </DynamicTitle>
         </DynamicContainer>
       );
     }
 
+    // Idle state
     if (!isSessionActive) {
       return (
         <DynamicContainer className="flex items-center justify-center h-full w-full">
-          <DynamicTitle className="text-2xl font-black tracking-tighter text-white my-2">Start Call</DynamicTitle>
+          <DynamicTitle className="text-lg sm:text-2xl font-black tracking-tighter text-white my-2">
+            🎤 Начать звонок
+          </DynamicTitle>
         </DynamicContainer>
       );
     }
 
+    // Listening state
     if (isListening) {
       return (
         <DynamicContainer className="flex flex-col items-center justify-center h-full w-full">
-          <DynamicTitle className="text-2xl font-black tracking-tighter text-white my-2">Listening...</DynamicTitle>
+          <DynamicTitle className="text-lg sm:text-2xl font-black tracking-tighter text-white my-2">
+            Слушаю...
+          </DynamicTitle>
         </DynamicContainer>
       );
     }
 
-    // Показываем ВСЕ сообщения (и assistant, и user)
+    // Conversation state - show all messages
     return (
-      <DynamicContainer className="flex flex-col h-full w-full px-4 py-2 space-y-2 overflow-y-auto" ref={scrollRef}>
-        {conversation.map((message, index) => (
-          <DynamicDiv key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`rounded-2xl tracking-tight leading-5 my-1 max-w-[85%] ${
-              message.role === 'user' ? 'bg-gray-600' : 'bg-cyan-300'
-            }`}>
-              <DynamicDescription className={`rounded-2xl tracking-tight leading-5 text-black text-left px-3 py-2 ${
-                message.role === 'user' ? 'bg-gray-600 text-white' : 'bg-cyan-300 text-black'
-              }`}>
-                {message.text}
-              </DynamicDescription>
-            </div>
-          </DynamicDiv>
-        ))}
+      <DynamicContainer className="flex flex-col h-full w-full">
+        <div 
+          ref={scrollRef} 
+          className="flex flex-col px-3 sm:px-4 py-2 space-y-2 overflow-y-auto h-full"
+        >
+          {conversation.map((message, index) => (
+            <DynamicDiv 
+              key={index} 
+              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div 
+                className={`rounded-2xl tracking-tight leading-5 my-1 max-w-[90%] sm:max-w-[85%] text-sm sm:text-base ${
+                  message.role === 'user' 
+                    ? 'bg-gray-600 text-white px-3 sm:px-4 py-2' 
+                    : 'bg-cyan-300 text-black px-3 sm:px-4 py-2'
+                }`}
+              >
+                {message.content}
+              </div>
+            </DynamicDiv>
+          ))}
+        </div>
       </DynamicContainer>
     );
   };
 
   return (
-    <div onClick={handleDynamicIslandClick} className="cursor-pointer">
+    <div onClick={handleDynamicIslandClick} className="cursor-pointer w-full max-w-md mx-auto px-4 sm:px-0">
       <DynamicIsland id="vapi-dynamic-island">
         {renderState()}
       </DynamicIsland>
@@ -131,10 +145,10 @@ const VapiDynamicIsland = () => {
 export default function Home() {
   return (
     <DynamicIslandProvider initialSize={SIZE_PRESETS.DEFAULT}>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-black">
-        {/* Заголовок сверху */}
-        <p className="text-gray-400 text-sm mb-4 tracking-wide">
-          Твой тренер по собеседованию в Jobcenter 🎤 
+      <main className="flex min-h-screen flex-col items-center justify-center bg-black px-4">
+        {/* Header */}
+        <p className="text-gray-400 text-xs sm:text-sm mb-4 tracking-wide text-center">
+          Штернмайстер тренажер для получения Гутшайн 🎤
         </p>
         <VapiDynamicIsland />
       </main>
