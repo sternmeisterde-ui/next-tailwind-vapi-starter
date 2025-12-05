@@ -35,7 +35,7 @@ const VapiDynamicIsland = () => {
         if (!timer) {
           const newTimer = setTimeout(() => {
             setIsListening(true);
-            setSize(SIZE_PRESETS.COMPACT);
+            setSize(SIZE_PRESETS.TALL);
           }, 1500);
           setTimer(newTimer);
         }
@@ -50,9 +50,6 @@ const VapiDynamicIsland = () => {
         clearTimeout(timer);
         setTimer(null);
       }
-      setSize(SIZE_PRESETS.DEFAULT);
-    }
-    if (!isSessionActive || isListening) {
       setSize(SIZE_PRESETS.DEFAULT);
     }
   }, [isSessionActive, setSize, volumeLevel, timer, conversation]);
@@ -71,6 +68,7 @@ const VapiDynamicIsland = () => {
   };
 
   const renderState = () => {
+    // Loading states
     if (isStartingCall || isEndingCall) {
       return (
         <DynamicContainer className="flex items-center justify-center h-full w-full">
@@ -82,6 +80,7 @@ const VapiDynamicIsland = () => {
       );
     }
 
+    // Idle state - not in call
     if (!isSessionActive) {
       return (
         <DynamicContainer className="flex items-center justify-center h-full w-full">
@@ -92,38 +91,54 @@ const VapiDynamicIsland = () => {
       );
     }
 
-    if (isListening) {
-      return (
-        <DynamicContainer className="flex flex-col items-center justify-center h-full w-full">
-          <DynamicTitle className="text-lg sm:text-2xl font-black tracking-tighter text-white my-2">
-            Слушаю...
-          </DynamicTitle>
-        </DynamicContainer>
-      );
-    }
-
+    // Active call - show status bar + persistent chat
     return (
       <DynamicContainer className="flex flex-col h-full w-full">
+        {/* Status bar - always visible at top */}
+        <div className="flex-shrink-0 px-3 py-2 border-b border-gray-700">
+          <div className="flex items-center justify-center gap-2">
+            {isListening ? (
+              <>
+                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                <span className="text-green-400 text-sm font-medium">Слушаю вас...</span>
+              </>
+            ) : (
+              <>
+                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
+                <span className="text-cyan-400 text-sm font-medium">Говорит...</span>
+              </>
+            )}
+            <span className="text-gray-500 text-xs ml-2">(нажмите чтобы завершить)</span>
+          </div>
+        </div>
+
+        {/* Chat area - scrollable, persists */}
         <div 
           ref={scrollRef} 
-          className="flex flex-col px-3 sm:px-4 py-2 space-y-2 overflow-y-auto h-full"
+          className="flex-1 flex flex-col px-3 sm:px-4 py-2 space-y-2 overflow-y-auto min-h-0"
         >
-          {conversation.map((message, index) => (
-            <DynamicDiv 
-              key={index} 
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div 
-                className={`rounded-2xl tracking-tight leading-5 my-1 max-w-[90%] sm:max-w-[85%] text-sm sm:text-base ${
-                  message.role === 'user' 
-                    ? 'bg-gray-600 text-white px-3 sm:px-4 py-2' 
-                    : 'bg-cyan-300 text-black px-3 sm:px-4 py-2'
-                }`}
+          {conversation.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <span className="text-gray-500 text-sm">Начните говорить...</span>
+            </div>
+          ) : (
+            conversation.map((message, index) => (
+              <DynamicDiv 
+                key={index} 
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                {message.text}
-              </div>
-            </DynamicDiv>
-          ))}
+                <div 
+                  className={`rounded-2xl tracking-tight leading-5 my-1 max-w-[90%] sm:max-w-[85%] text-sm sm:text-base ${
+                    message.role === 'user' 
+                      ? 'bg-gray-600 text-white px-3 sm:px-4 py-2' 
+                      : 'bg-cyan-300 text-black px-3 sm:px-4 py-2'
+                  }`}
+                >
+                  {message.text}
+                </div>
+              </DynamicDiv>
+            ))
+          )}
         </div>
       </DynamicContainer>
     );
@@ -142,9 +157,25 @@ export default function Home() {
   return (
     <DynamicIslandProvider initialSize={SIZE_PRESETS.DEFAULT}>
       <main className="flex min-h-screen flex-col items-center justify-center bg-black px-4">
-        <p className="text-gray-400 text-xs sm:text-sm mb-4 tracking-wide text-center">
-          Штернмайстер тренажер для получения Гутшайн 🎤
-        </p>
+        {/* Fixed Header */}
+        <div className="fixed top-0 left-0 right-0 bg-black/90 backdrop-blur-sm py-4 px-4 z-10 border-b border-gray-800">
+          <div className="max-w-md mx-auto text-center">
+            <h1 className="text-white text-xl sm:text-2xl font-bold tracking-tight">
+              Stern Meister Coach
+            </h1>
+            <p className="text-gray-400 text-xs sm:text-sm mt-1">
+              Твой тренер по собеседованию в Jobcenter
+            </p>
+            <p className="text-gray-500 text-xs mt-1">
+              🎤 Симулирует реальное интервью на немецком 💬
+            </p>
+          </div>
+        </div>
+
+        {/* Spacer for fixed header */}
+        <div className="h-24 sm:h-28"></div>
+
+        {/* Dynamic Island */}
         <VapiDynamicIsland />
       </main>
     </DynamicIslandProvider>
